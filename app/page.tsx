@@ -1,7 +1,6 @@
 import TotalRevenueCard from "@/components/total-revenue-card"
 import { Metadata } from "next"
 import Image from "next/image"
-// import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
@@ -15,14 +14,15 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components//ui/tabs"
-import { CalendarDateRangePicker } from "@/components/date-range-picker"
 import { MainNav } from "@/components/main-nav"
 import { Overview } from "@/components/overview"
 import RecentSales from "@/components/recent-sales"
 import { Search } from "@/components/search"
 import TeamSwitcher from "@/components/team-switcher"
 import { UserNav } from "@/components/user-nav"
-import { DownloadButton } from "@/components/ui/download-button";
+import { DateRangeDownloadSection } from "@/components/ui/date-range-download"
+
+
 
 
 
@@ -66,8 +66,7 @@ export default function DashboardPage() {
           <div className="flex items-center justify-between space-y-2">
             <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
             <div className="flex items-center space-x-2">
-              <CalendarDateRangePicker />
-              <DownloadButton />
+              <DateRangeDownloadSection />
             </div>
           </div>
           <Tabs defaultValue="overview" className="space-y-4">
