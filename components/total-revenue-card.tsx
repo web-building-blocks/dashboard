@@ -1,15 +1,19 @@
-
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import clientPromise from "@/lib/mongodb"
+import { connectToDatabase } from "@/lib/mongodb";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+} from "@/components/ui/card";
 
 export default async function TotalRevenueCard() {
-  const client = await clientPromise
-  const db = client.db(process.env.MONGODB_DB)
+  const db = await connectToDatabase();
+  const allSales = await db.collection("dashboard").find({}).toArray();
 
-
-  const allSales = await db.collection("dashboard").find({}).toArray()
-
-  const total = allSales.reduce((sum, sale) => sum + (sale.amount || 0), 0)
+  const total = allSales.reduce(
+    (sum: number, sale: any) => sum + (sale.amount || 0),
+    0
+  );
 
   return (
     <Card>
@@ -22,7 +26,7 @@ export default async function TotalRevenueCard() {
         <p className="text-xs text-muted-foreground">+20.1% from last month</p>
       </CardContent>
     </Card>
-  )
+  );
 }
 
 function DollarIcon() {
@@ -32,12 +36,9 @@ function DollarIcon() {
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth="2"
-      className="h-4 w-4 text-muted-foreground"
+      className="w-4 h-4 text-muted-foreground"
     >
-      <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+      <path d="M12 2v20M7.5 5.5a3.5 3.5 0 0 0 7 0 7.5 3.5 0 0 1 0 7.5a3.5 3.5 0 0 0-7 0" />
     </svg>
-  )
+  );
 }

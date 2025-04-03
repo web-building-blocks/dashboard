@@ -1,10 +1,8 @@
-// app/api/recent-sales/route.ts
-import { NextResponse } from 'next/server'
-import clientPromise from '@/lib/mongodb'
+import { NextResponse } from 'next/server';
+import { connectToDatabase } from '@/lib/mongodb';
 
 export async function GET() {
-  const client = await clientPromise
-  const db = client.db(process.env.MONGODB_DB)
+  const db = await connectToDatabase();
 
   const sales = await db.collection("dashboard").aggregate([
     {
@@ -24,7 +22,7 @@ export async function GET() {
     {
       $sort: { totalAmount: -1 }
     }
-  ]).toArray()
+  ]).toArray();
 
-  return NextResponse.json(sales)
+  return NextResponse.json(sales);
 }
