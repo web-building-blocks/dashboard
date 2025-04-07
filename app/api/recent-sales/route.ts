@@ -1,10 +1,17 @@
-import { NextResponse } from 'next/server';
-import { connectToDatabase } from '@/lib/mongodb';
+import { NextResponse } from "next/server";
+import { connectToDatabase } from "@/lib/mongodb";
 
 export async function GET() {
   const db = await connectToDatabase();
 
+  const oneMonthAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000); //Last 30 days
+
   const sales = await db.collection("dashboard").aggregate([
+    {
+      $match: {
+        createdAt: { $gte: oneMonthAgo }
+      }
+    },
     {
       $group: {
         _id: { name: "$name", email: "$email" },

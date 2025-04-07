@@ -4,8 +4,8 @@ import Image from "next/image"
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
+  CardDescription,
   CardTitle,
 } from "@/components/ui/card"
 import {
@@ -15,7 +15,7 @@ import {
   TabsTrigger,
 } from "@/components//ui/tabs"
 import { MainNav } from "@/components/main-nav"
-import { Overview } from "@/components/overview"
+import  {Overview}  from "@/components/overview"
 import RecentSales from "@/components/recent-sales"
 import { Search } from "@/components/search"
 import TeamSwitcher from "@/components/team-switcher"
@@ -175,7 +175,7 @@ export default function DashboardPage() {
                   <CardHeader>
                     <CardTitle>Recent Sales</CardTitle>
                     <CardDescription>
-                      You made 265 sales this month.
+                      Sales records from last 30 days
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
