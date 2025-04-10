@@ -1,39 +1,51 @@
-"use client"
+"use client";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 
-import { useEffect, useState } from "react"
+type SalesSummary = {
+  name: string;
+  email: string;
+  totalAmount: number;
+};
 
-type SaleSummary = {
-  name: string
-  email: string
-  totalAmount: number
-}
-
-export default function RecentSales() {
-  const [data, setData] = useState<SaleSummary[]>([])
+function RecentSales() {
+  const [salesData, setSalesData] = useState<SalesSummary[]>([]);
+  const searchParams = useSearchParams();
+  const keyword = searchParams.get("query") || "";
 
   useEffect(() => {
-    fetch("/api/recent-sales")
-      .then(res => res.json())
-      .then(data => setData(data))
-  }, [])
+    const fetchSales = async () => {
+      try {
+        const res = await fetch(`/api/recent-sales?query=${encodeURIComponent(keyword)}`);
+        if (!res.ok) return;
+        const data = await res.json();
+        setSalesData(data);
+      } catch (err) {
+        console.error("Error fetching recent sales:", err);
+      }
+    };
+
+    fetchSales();
+  }, [keyword]);
+
+  if (!salesData.length) {
+    return <p className="text-sm text-muted-foreground">No recent sales found.</p>;
+  }
 
   return (
     <div className="space-y-8">
-      {data.map((item, index) => (
-        <div key={index} className="flex items-center">
-          <div className="h-9 w-9 flex items-center justify-center rounded-full bg-muted">
-            {item.name.slice(0, 2).toUpperCase()}
+      {salesData.map((user) => (
+        <div key={user.email} className="flex items-center justify-between">
+          <div className="grid gap-1">
+            <p className="text-sm font-medium leading-none">{user.name}</p>
+            <p className="text-sm text-muted-foreground">{user.email}</p>
           </div>
-          <div className="ml-4 space-y-1">
-            <p className="text-sm font-medium leading-none">{item.name}</p>
-            <p className="text-sm text-muted-foreground">{item.email}</p>
-          </div>
-          <div className="ml-auto font-medium">
-            +${item.totalAmount ? item.totalAmount.toFixed(2) : "0.00"}
-          </div>
-
+          <div className="text-sm font-medium">${user.totalAmount.toFixed(2)}</div>
         </div>
       ))}
     </div>
-  )
+  );
 }
+
+export default RecentSales;
+

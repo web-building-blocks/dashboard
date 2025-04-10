@@ -23,7 +23,7 @@ export default async function TotalRevenueCard() {
       </CardHeader>
       <CardContent>
         <div className="text-2xl font-bold">${total.toLocaleString()}</div>
-        <p className="text-xs text-muted-foreground">+20.1% from last month</p>
+        <p className="text-xs text-muted-foreground">Total revenue this year</p>
       </CardContent>
     </Card>
   );

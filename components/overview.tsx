@@ -1,82 +1,33 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts"
 
-const data = [
-  {
-    name: "Jan",
-    total: Math.floor(Math.random() * 5000) + 1000,
-  },
-  {
-    name: "Feb",
-    total: Math.floor(Math.random() * 5000) + 1000,
-  },
-  {
-    name: "Mar",
-    total: Math.floor(Math.random() * 5000) + 1000,
-  },
-  {
-    name: "Apr",
-    total: Math.floor(Math.random() * 5000) + 1000,
-  },
-  {
-    name: "May",
-    total: Math.floor(Math.random() * 5000) + 1000,
-  },
-  {
-    name: "Jun",
-    total: Math.floor(Math.random() * 5000) + 1000,
-  },
-  {
-    name: "Jul",
-    total: Math.floor(Math.random() * 5000) + 1000,
-  },
-  {
-    name: "Aug",
-    total: Math.floor(Math.random() * 5000) + 1000,
-  },
-  {
-    name: "Sep",
-    total: Math.floor(Math.random() * 5000) + 1000,
-  },
-  {
-    name: "Oct",
-    total: Math.floor(Math.random() * 5000) + 1000,
-  },
-  {
-    name: "Nov",
-    total: Math.floor(Math.random() * 5000) + 1000,
-  },
-  {
-    name: "Dec",
-    total: Math.floor(Math.random() * 5000) + 1000,
-  },
-]
-
 export function Overview() {
+  const [data, setData] = useState<{ name: string; total: number }[]>([])
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const res = await fetch("/api/overview")
+        const json = await res.json()
+        if (json.success) {
+          setData(json.data)
+        }
+      } catch (err) {
+        console.error("Failed to fetch overview data", err)
+      }
+    }
+
+    fetchData()
+  }, [])
+
   return (
     <ResponsiveContainer width="100%" height={350}>
       <BarChart data={data}>
-        <XAxis
-          dataKey="name"
-          stroke="#888888"
-          fontSize={12}
-          tickLine={false}
-          axisLine={false}
-        />
-        <YAxis
-          stroke="#888888"
-          fontSize={12}
-          tickLine={false}
-          axisLine={false}
-          tickFormatter={(value) => `$${value}`}
-        />
-        <Bar
-          dataKey="total"
-          fill="currentColor"
-          radius={[4, 4, 0, 0]}
-          className="fill-primary"
-        />
+        <XAxis dataKey="name" stroke="#888888" fontSize={12} />
+        <YAxis stroke="#888888" fontSize={12} />
+        <Bar dataKey="total" fill="#000000" radius={[4, 4, 0, 0]} />
       </BarChart>
     </ResponsiveContainer>
   )
