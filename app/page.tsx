@@ -20,12 +20,10 @@ import RecentSales from "@/components/recent-sales"
 import { Search } from "@/components/search"
 import TeamSwitcher from "@/components/team-switcher"
 import { UserNav } from "@/components/user-nav"
-import { DateRangeDownloadSection } from "@/components/ui/date-range-download"
 import { SubscriptionCard } from "@/components/subscription-card"
 import { OrderCountCard } from "@/components/order-count-card"
 import { ActiveNowCard } from "@/components/active-now-card"
-
-
+import { DownloadButtonWithDateRange } from "@/components/download-button-with-date-range"
 
 
 
@@ -71,7 +69,7 @@ export default function DashboardPage() {
           <div className="flex items-center justify-between space-y-2">
             <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
             <div className="flex items-center space-x-2">
-              <DateRangeDownloadSection />
+              <DownloadButtonWithDateRange />
             </div>
           </div>
           <Tabs defaultValue="overview" className="space-y-4">

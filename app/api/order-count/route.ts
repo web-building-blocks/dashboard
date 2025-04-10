@@ -4,12 +4,16 @@ import { MongoClient } from "mongodb"
 const uri = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017"
 const dbName = "dashboard"
 
-export async function GET() {
+export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url)
+  const team = searchParams.get("team") || "personal"
+  const collectionName = `sales_${team}`
+
   try {
     const client = new MongoClient(uri)
     await client.connect()
     const db = client.db(dbName)
-    const collection = db.collection("dashboard")
+    const collection = db.collection(collectionName)
 
     const now = new Date()
     const thirtyDaysAgo = new Date()
@@ -36,6 +40,9 @@ export async function GET() {
     return NextResponse.json({ success: true, totalAmount })
   } catch (err) {
     console.error("Order API error:", err)
-    return NextResponse.json({ success: false, error: "Failed to fetch order data" }, { status: 500 })
+    return NextResponse.json(
+      { success: false, error: "Failed to fetch order data" },
+      { status: 500 }
+    )
   }
 }

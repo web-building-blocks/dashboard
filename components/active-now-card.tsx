@@ -1,19 +1,24 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { useSearchParams } from "next/navigation"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 
 export function ActiveNowCard() {
   const [totalSubscriptions, setTotalSubscriptions] = useState(0)
   const [loading, setLoading] = useState(true)
+  const searchParams = useSearchParams()
+  const team = searchParams.get("team") || "personal"
 
   useEffect(() => {
     async function fetchData() {
       try {
-        const res = await fetch("/api/active-now")
+        const res = await fetch(`/api/active-now?team=${team}`)
         const json = await res.json()
         if (json.success) {
-          const total = json.data.reduce((acc: number, cur: any) => acc + cur.count, 0)
+          const total = json.data
+            .filter((item: any) => item.count > 0 && item._id !== null)
+            .reduce((acc: number, cur: any) => acc + cur.count, 0)
           setTotalSubscriptions(total)
         }
       } catch (error) {
@@ -24,7 +29,7 @@ export function ActiveNowCard() {
     }
 
     fetchData()
-  }, [])
+  }, [team])
 
   return (
     <Card>

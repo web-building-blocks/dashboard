@@ -4,12 +4,16 @@ import { MongoClient } from "mongodb"
 const uri = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017"
 const dbName = "dashboard"
 
-export async function GET() {
+export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url)
+  const team = searchParams.get("team") || "personal"
+  const collectionName = `sales_${team}`
+
   try {
     const client = new MongoClient(uri)
     await client.connect()
     const db = client.db(dbName)
-    const collection = db.collection("dashboard")
+    const collection = db.collection(collectionName)
 
     const oneYearAgo = new Date()
     oneYearAgo.setMonth(oneYearAgo.getMonth() - 11)
@@ -24,9 +28,7 @@ export async function GET() {
           total: { $sum: "$amount" }
         }
       },
-      {
-        $sort: { "_id": 1 }
-      }
+      { $sort: { "_id": 1 } }
     ]
 
     const results = await collection.aggregate(pipeline).toArray()

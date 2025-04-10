@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { useRouter, useSearchParams } from "next/navigation"
 import {
   CaretSortIcon,
   CheckIcon,
@@ -73,17 +74,33 @@ const groups = [
 ]
 
 type Team = (typeof groups)[number]["teams"][number]
-
 type PopoverTriggerProps = React.ComponentPropsWithoutRef<typeof PopoverTrigger>
-
 interface TeamSwitcherProps extends PopoverTriggerProps {}
 
 export default function TeamSwitcher({ className }: TeamSwitcherProps) {
+  const router = useRouter()
+  const searchParams = useSearchParams()
+
+  // 1️⃣ 获取 URL 中当前 team 值
+  const currentTeamValue = searchParams.get("team") || "personal"
+
+  // 2️⃣ 在 teams 中找到对应 team 对象
+  const allTeams = groups.flatMap((g) => g.teams)
+  const defaultTeam = allTeams.find((t) => t.value === currentTeamValue) ?? allTeams[0]
+
   const [open, setOpen] = React.useState(false)
   const [showNewTeamDialog, setShowNewTeamDialog] = React.useState(false)
-  const [selectedTeam, setSelectedTeam] = React.useState<Team>(
-    groups[0].teams[0]
-  )
+  const [selectedTeam, setSelectedTeam] = React.useState<Team>(defaultTeam)
+
+  // 3️⃣ 切换 team 时，更新 URL 的 search param
+  const handleSelect = (team: Team) => {
+    setSelectedTeam(team)
+    setOpen(false)
+
+    const params = new URLSearchParams(searchParams.toString())
+    params.set("team", team.value)
+    router.push(`?${params.toString()}`)
+  }
 
   return (
     <Dialog open={showNewTeamDialog} onOpenChange={setShowNewTeamDialog}>
@@ -118,10 +135,7 @@ export default function TeamSwitcher({ className }: TeamSwitcherProps) {
                   {group.teams.map((team) => (
                     <CommandItem
                       key={team.value}
-                      onSelect={() => {
-                        setSelectedTeam(team)
-                        setOpen(false)
-                      }}
+                      onSelect={() => handleSelect(team)}
                       className="text-sm"
                     >
                       <Avatar className="mr-2 h-5 w-5">

@@ -1,19 +1,37 @@
-import { connectToDatabase } from "@/lib/mongodb";
+"use client"
+
+import { useEffect, useState } from "react"
+import { useSearchParams } from "next/navigation"
 import {
   Card,
   CardHeader,
   CardTitle,
   CardContent,
-} from "@/components/ui/card";
+} from "@/components/ui/card"
 
-export default async function TotalRevenueCard() {
-  const db = await connectToDatabase();
-  const allSales = await db.collection("dashboard").find({}).toArray();
+export default function TotalRevenueCard() {
+  const [total, setTotal] = useState(0)
+  const [loading, setLoading] = useState(true)
+  const searchParams = useSearchParams()
+  const team = searchParams.get("team") || "personal"
 
-  const total = allSales.reduce(
-    (sum: number, sale: any) => sum + (sale.amount || 0),
-    0
-  );
+  useEffect(() => {
+    async function fetchRevenue() {
+      try {
+        const res = await fetch(`/api/total-revenue?team=${team}`)
+        const json = await res.json()
+        if (json.success) {
+          setTotal(json.total)
+        }
+      } catch (err) {
+        console.error("Failed to fetch revenue data", err)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchRevenue()
+  }, [team])
 
   return (
     <Card>
@@ -22,11 +40,13 @@ export default async function TotalRevenueCard() {
         <DollarIcon />
       </CardHeader>
       <CardContent>
-        <div className="text-2xl font-bold">${total.toLocaleString()}</div>
+        <div className="text-2xl font-bold">
+          {loading ? "Loading..." : `$${total.toLocaleString()}`}
+        </div>
         <p className="text-xs text-muted-foreground">Total revenue this year</p>
       </CardContent>
     </Card>
-  );
+  )
 }
 
 function DollarIcon() {
@@ -40,5 +60,5 @@ function DollarIcon() {
     >
       <path d="M12 2v20M7.5 5.5a3.5 3.5 0 0 0 7 0 7.5 3.5 0 0 1 0 7.5a3.5 3.5 0 0 0-7 0" />
     </svg>
-  );
+  )
 }

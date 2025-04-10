@@ -1,26 +1,37 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
+import { useSearchParams } from "next/navigation"
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+} from "@/components/ui/card"
 
 export function OrderCountCard() {
   const [amount, setAmount] = useState<number | null>(null)
+  const [loading, setLoading] = useState(true)
+  const searchParams = useSearchParams()
+  const team = searchParams.get("team") || "personal"
 
   useEffect(() => {
     async function fetchAmount() {
       try {
-        const res = await fetch("/api/order-count")
+        const res = await fetch(`/api/order-count?team=${team}`)
         const json = await res.json()
         if (json.success) {
           setAmount(json.totalAmount)
         }
       } catch (err) {
         console.error("Failed to fetch order amount:", err)
+      } finally {
+        setLoading(false)
       }
     }
 
     fetchAmount()
-  }, [])
+  }, [team])
 
   return (
     <Card>
@@ -39,7 +50,7 @@ export function OrderCountCard() {
       </CardHeader>
       <CardContent>
         <div className="text-2xl font-bold">
-          {amount !== null ? `${amount.toLocaleString()}` : "Loading..."}
+          {loading ? "Loading..." : `${amount?.toLocaleString() ?? 0}`}
         </div>
         <p className="text-xs text-muted-foreground">Total order count this year</p>
       </CardContent>

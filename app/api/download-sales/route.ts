@@ -1,17 +1,19 @@
-import { NextResponse } from "next/server";
-import { connectToDatabase } from "@/lib/mongodb";
+import { NextResponse } from "next/server"
+import { connectToDatabase } from "@/lib/mongodb"
 
 export async function GET(req: Request) {
-  const { searchParams } = new URL(req.url);
-  const from = new Date(searchParams.get("from") || "");
-  const to = new Date(searchParams.get("to") || "");
+  const { searchParams } = new URL(req.url)
+  const from = new Date(searchParams.get("from") || "")
+  const to = new Date(searchParams.get("to") || "")
+  const team = searchParams.get("team") || "personal"
+  const collectionName = `sales_${team}`
 
   if (isNaN(from.getTime()) || isNaN(to.getTime())) {
-    return new NextResponse("Invalid date range", { status: 400 });
+    return new NextResponse("Invalid date range", { status: 400 })
   }
 
-  const db = await connectToDatabase();
-  const collection = db.collection("dashboard");
+  const db = await connectToDatabase()
+  const collection = db.collection(collectionName)
 
   const results = await collection
     .find({
@@ -21,22 +23,21 @@ export async function GET(req: Request) {
       },
     })
     .sort({ createdAt: -1 })
-    .toArray();
+    .toArray()
 
-  const header = "Name,Email,Quantity,Amount,Date\n";
+  const header = "Name,Email,Quantity,Amount,Date\n"
   const rows = results.map((row) => {
-    const date = new Date(row.createdAt).toISOString().split("T")[0]; 
-    return `${row.name},${row.email},${row.quantity},${row.amount},${date}`;
-  }).join("\n");
-  
+    const date = new Date(row.createdAt).toISOString().split("T")[0]
+    return `${row.name},${row.email},${row.quantity},${row.amount},${date}`
+  }).join("\n")
 
-  const csv = header + rows;
+  const csv = header + rows
 
   return new NextResponse(csv, {
     status: 200,
     headers: {
       "Content-Type": "text/csv",
-      "Content-Disposition": "attachment; filename=filtered-sales.csv",
+      "Content-Disposition": `attachment; filename=${team}-sales.csv`,
     },
-  });
+  })
 }
