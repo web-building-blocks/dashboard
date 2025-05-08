@@ -81,10 +81,9 @@ export default function TeamSwitcher({ className }: TeamSwitcherProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
 
-  // 1️⃣ 获取 URL 中当前 team 值
   const currentTeamValue = searchParams.get("team") || "personal"
 
-  // 2️⃣ 在 teams 中找到对应 team 对象
+
   const allTeams = groups.flatMap((g) => g.teams)
   const defaultTeam = allTeams.find((t) => t.value === currentTeamValue) ?? allTeams[0]
 
@@ -92,7 +91,7 @@ export default function TeamSwitcher({ className }: TeamSwitcherProps) {
   const [showNewTeamDialog, setShowNewTeamDialog] = React.useState(false)
   const [selectedTeam, setSelectedTeam] = React.useState<Team>(defaultTeam)
 
-  // 3️⃣ 切换 team 时，更新 URL 的 search param
+
   const handleSelect = (team: Team) => {
     setSelectedTeam(team)
     setOpen(false)
